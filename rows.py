@@ -93,7 +93,7 @@ class data:
 				row2 = self.another(r1, obj.rows)#to implement
 				s = 1 / n if self.dom(obj, row1, row2) else 0
 				obj.rows[r1][c] = round(obj.rows[r1][c] + s, 2)
-			print(list(obj.rows[r1].values()))
+			#print(list(obj.rows[r1].values()))
 			result.append(list(obj.rows[r1].values()))
 		return result
 
@@ -196,18 +196,11 @@ class data:
 				dic[i] = val
 				i += 1
 
-			# for key, val in dic.items():
-			# 	print(key, val)
 			return dic
 
 
 		for c in obj.indeps:
 			if obj.nums.get(c, "") != "":
-
-
-				# for key, val in obj.rows.items():
-				# 	print(key, val)
-				# print("====")
 
 				rows = sortRow(c, rows)  #ksort(c, rows)
 
@@ -216,28 +209,98 @@ class data:
 				cuts(c, 1, most, "|..")
 
 
-				for key, val in rows.items():
-					print(key, val)
+				# for key, val in rows.items():
+				# 	print(key, val)
 
 		return self
 
 
 	def super(self, obj):
+		#print(obj.rows)
+		#print("ind:", obj.indeps)
+		rows = obj.rows
+		enough = len(rows) ** 0.5 #0.5 is magic number
+		goal = len(rows[1])
+		#print(len(rows[1]))
 		def band(c, lo, hi):
-			pass
+			if lo == 1:
+				return ".." + str(rows[hi][c])
+			elif hi == most:   #most!?!!!!!!!
+				return str(rows[lo][c]) + ".."
+			else:
+				return str(rows[lo][c]) + ".." + str(rows[hi][c])
+
 		def argmin(c, lo, hi):
-			pass
+			xl, xr = num(), num()
+			yl, yr = num(), num ()
+			for i in range(lo, hi + 1):
+				xr.numInc(rows[i][c])
+				yr.numInc(rows[i][goal])
+			bestx = xr.sd
+			besty = yr.sd
+			mu = yr.mu
+			tmpx = float('Inf')
+			tmpy = float('Inf')
+			cut = 0
+			if hi - lo > 2 * enough:
+				for i in range(lo, hi + 1):
+					x = rows[i][c]
+					y = rows[i][goal]
+					
+					xl.numInc(x)
+					xr.numDec(x)
+
+					yl.numInc(y)
+					yr.numDec(y)
+
+					if xl.n >= enough and xr.n >= enough:
+						tmpx = num.numXpect(xl, xr) * 1.05
+						tmpy = num.numXpect(yl, yr) * 1.05
+					if tmpx < bestx:
+						if tmpy < besty:
+							cut, bestx, besty = i, tmpx, tmpy
+			return cut, mu
+
 		def cuts(c, lo, hi, pre):
-			pass
+			cut, mu = argmin(c, lo, hi)
+			if cut:
+				cuts(c, lo, cut, pre + "|..")
+				cuts(c, cut + 1, hi, pre + "|..")
+			else:
+				s = band(c, lo, hi)
+				for i in range(lo, hi + 1):
+					rows[i][c] = s
 
 		def stop(c, t): #t is rows, c is col
-			for i in range(len(t) - 1, -1, -1):
+			for i in range(len(t), 0, -1):
 				if t[i][c] != '?':
-					return i + 1
+					return i
 				else:
 					return 0
 
+		def sortRow(c, rows):
 
+			dic = {}
+			rows = sorted(rows.items(), key = lambda x:x[1][c])
+			
+			i = 1
+			for item in rows:
+				key, val = item
+				#print(key, val)
+				dic[i] = val
+				i += 1
+
+			return dic
+
+		for c in obj.indeps:
+			#print(c)
+			if obj.nums.get(c, "") != "":
+				rows = sortRow(c, rows)
+				#print(rows)
+				most = stop(c, rows)
+				cuts(c, 1, most, "|..")
+		for key, val in rows.items():
+			print(key, val)
 
 @O.k
 def testing():
@@ -245,14 +308,18 @@ def testing():
 	#part1
 	n1 = data()
 
+	# def showDom(self, fname):
+	# 	return self.doms(self.readRows(fname))
+
 
 	#put dom in
 	n1.showDom("weatherLong.csv")
-	print("===")
-	print(n1.rows)
+	#print(result)
+	#print("===")
 
 	#super
-	obj = n1.super(n1.readRows("weatherLong.csv"))
+	obj = n1.super(n1)
+	#print(obj.rows)
 
 if __name__== "__main__":
   O.report()
