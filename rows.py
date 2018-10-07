@@ -2,6 +2,7 @@ from num import num
 from sym import sym
 import re
 import random
+import math
 import operator
 from testEngine import O
 
@@ -262,12 +263,15 @@ class data:
 			return cut, mu
 
 		def cuts(c, lo, hi, pre):
+			txt = pre + str(rows[lo][c]) + ".." + str(rows[hi][c])
 			cut, mu = argmin(c, lo, hi)
 			if cut:
+				print(txt)
 				cuts(c, lo, cut, pre + "|..")
 				cuts(c, cut + 1, hi, pre + "|..")
 			else:
 				s = band(c, lo, hi)
+				print(txt + "==>" + str(math.floor(100 * mu)))
 				for i in range(lo, hi + 1):
 					rows[i][c] = s
 
@@ -297,10 +301,11 @@ class data:
 			if obj.nums.get(c, "") != "":
 				rows = sortRow(c, rows)
 				#print(rows)
+				print("=====" + obj.name[c] + "=====")
 				most = stop(c, rows)
 				cuts(c, 1, most, "|..")
-		for key, val in rows.items():
-			print(key, val)
+		# for key, val in rows.items():
+		# 	print(key, val)
 
 @O.k
 def testing():
