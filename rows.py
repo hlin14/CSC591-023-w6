@@ -243,7 +243,7 @@ class data:
 			tmpx = float('Inf')
 			tmpy = float('Inf')
 			cut = 0
-			if hi - lo > 2 * enough:
+			if (hi - lo) > 2 * enough:
 				for i in range(lo, hi + 1):
 					x = rows[i][c]
 					y = rows[i][goal]
@@ -257,12 +257,19 @@ class data:
 					if xl.n >= enough and xr.n >= enough:
 						tmpx = num.numXpect(xl, xr) * 1.05
 						tmpy = num.numXpect(yl, yr) * 1.05
+						# print(xl.n)
+						# print(xr.n)
+						# print(xl.sd)
+						# print(xr.sd)
+						# print(tmpx)
 					if tmpx < bestx:
 						if tmpy < besty:
 							cut, bestx, besty = i, tmpx, tmpy
 			return cut, mu
 
 		def cuts(c, lo, hi, pre):
+			#print(rows[hi][c])
+			#print(rows[lo][c])
 			txt = pre + str(rows[lo][c]) + ".." + str(rows[hi][c])
 			cut, mu = argmin(c, lo, hi)
 			if cut:
@@ -276,17 +283,18 @@ class data:
 					rows[i][c] = s
 
 		def stop(c, t): #t is rows, c is col
+			#print("c",c)
 			for i in range(len(t), 0, -1):
+				#print(t[i][c])
 				if t[i][c] != '?':
-					return i
-				else:
-					return 0
+					return i	
+			return 0
 
 		def sortRow(c, rows):
 
 			dic = {}
-			rows = sorted(rows.items(), key = lambda x:x[1][c])
-			
+			rows = sorted(rows.items(), key = lambda x: x[1][c]) #to prevend '?'
+			#print(rows[:20])
 			i = 1
 			for item in rows:
 				key, val = item
@@ -295,14 +303,14 @@ class data:
 				i += 1
 
 			return dic
-
+		print(obj.indeps)
 		for c in obj.indeps:
-			#print(c)
 			if obj.nums.get(c, "") != "":
 				rows = sortRow(c, rows)
 				#print(rows)
 				print("=====" + obj.name[c] + "=====")
 				most = stop(c, rows)
+				#print("most:", most)
 				cuts(c, 1, most, "|..")
 		# for key, val in rows.items():
 		# 	print(key, val)
@@ -312,19 +320,19 @@ def testing():
 
 	#part1
 	n1 = data()
-
+	n2 = data()
 	# def showDom(self, fname):
 	# 	return self.doms(self.readRows(fname))
 
 
 	#put dom in
-	n1.showDom("weatherLong.csv")
-	#print(result)
-	#print("===")
-
-	#super
-	obj = n1.super(n1)
+	#n1.showDom("weatherLong.csv")
+	#n1.super(n1)
 	#print(obj.rows)
+
+	n2.showDom("auto.csv")
+	n2.super(n2)
+
 
 if __name__== "__main__":
   O.report()

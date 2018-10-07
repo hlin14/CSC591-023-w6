@@ -20,6 +20,8 @@ class num:
 	def numInc(self, x):
 		if x is None:
 			return x
+		if x == '?':
+			return x
 		self.n += 1
 		self.same.sampleInc(x)
 		d = x - self.mu
@@ -35,6 +37,8 @@ class num:
 		if x is None:
 			return x
 		if self.n == 1:
+			return x
+		if x == '?':
 			return x
 		d = x - self.mu
 		self.n -= 1
