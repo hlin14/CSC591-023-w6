@@ -200,6 +200,7 @@ class data:
 			return dic
 
 
+
 		for c in obj.indeps:
 			if obj.nums.get(c, "") != "":
 
@@ -220,7 +221,7 @@ class data:
 		#print(obj.rows)
 		#print("ind:", obj.indeps)
 		rows = obj.rows
-		enough = len(rows) ** 0.5 #0.5 is magic number
+		enough = len(rows) ** 0.6 #0.5 is magic number
 		goal = len(rows[1])
 		#print(len(rows[1]))
 		def band(c, lo, hi):
@@ -254,14 +255,14 @@ class data:
 					yl.numInc(y)
 					yr.numDec(y)
 
-					if xl.n >= enough and xr.n >= enough:
+					if xl.n > enough and xr.n > enough:
 						tmpx = num.numXpect(xl, xr) * 1.05
 						tmpy = num.numXpect(yl, yr) * 1.05
 						# print(xl.n)
-						# print(xr.n)
+						#print("xr.n:", xr.n)
 						# print(xl.sd)
-						# print(xr.sd)
-						# print(tmpx)
+						#print(xr.sd)
+						#print("tmpx:", tmpx)
 					if tmpx < bestx:
 						if tmpy < besty:
 							cut, bestx, besty = i, tmpx, tmpy
@@ -286,14 +287,18 @@ class data:
 			#print("c",c)
 			for i in range(len(t), 0, -1):
 				#print(t[i][c])
-				if t[i][c] != '?':
+				if t[i][c] != '?' and t[i][c] != float("Inf"):
 					return i	
 			return 0
 
 		def sortRow(c, rows):
-
+			#print(c)
+			#print("==================")
 			dic = {}
-			rows = sorted(rows.items(), key = lambda x: x[1][c]) #to prevend '?'
+			#(str(type(x)), x))
+			rows = sorted(rows.items(), key = lambda x: float(x[1][c])) #to prevend '?'
+			# for item in rows:
+			# 	print(item)
 			#print(rows[:20])
 			i = 1
 			for item in rows:
@@ -303,9 +308,17 @@ class data:
 				i += 1
 
 			return dic
-		print(obj.indeps)
+		def removeQu(c, rows):
+			for key in list(rows):
+				if rows[key][c] == '?':
+				 	rows[key][c] = float("Inf")
+					#rows[key][c] = 0
+			return rows
+
+		#print(obj.indeps)
 		for c in obj.indeps:
 			if obj.nums.get(c, "") != "":
+				rows = removeQu(c, rows)
 				rows = sortRow(c, rows)
 				#print(rows)
 				print("=====" + obj.name[c] + "=====")

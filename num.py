@@ -20,7 +20,9 @@ class num:
 	def numInc(self, x):
 		if x is None:
 			return x
-		if x == '?':
+		if x == "?":
+			return x
+		if x == float("Inf"):
 			return x
 		self.n += 1
 		self.same.sampleInc(x)
@@ -38,7 +40,9 @@ class num:
 			return x
 		if self.n == 1:
 			return x
-		if x == '?':
+		if x == "?":
+			return x
+		if x == float("Inf"):
 			return x
 		d = x - self.mu
 		self.n -= 1
@@ -49,6 +53,8 @@ class num:
 		return x
 
 	def numNorm(self, x):
+		if x == float("Inf"):
+			return 0.5
 		return 0.5 if x == '?' else (x - self.lo) / (self.hi - self.lo + 10 ** -32)
 
 	def numXpect(i, j):
